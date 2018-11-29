@@ -260,25 +260,28 @@ static void applyKeyAction(key_state_t *keyState, key_action_t *action)
             } else {
                 ActiveUsbBasicKeyboardReport->modifiers |= action->keystroke.modifiers;
             }
-            switch (action->keystroke.keystrokeType) {
-                case KeystrokeType_Basic:
-                    if (basicScancodeIndex >= USB_BASIC_KEYBOARD_MAX_KEYS || action->keystroke.scancode == 0) {
+            if(keyState->previous || action->keystroke.modifiers == 0)
+            {
+                switch (action->keystroke.keystrokeType) {
+                    case KeystrokeType_Basic:
+                        if (basicScancodeIndex >= USB_BASIC_KEYBOARD_MAX_KEYS || action->keystroke.scancode == 0) {
+                            break;
+                        }
+                        ActiveUsbBasicKeyboardReport->scancodes[basicScancodeIndex++] = action->keystroke.scancode;
                         break;
-                    }
-                    ActiveUsbBasicKeyboardReport->scancodes[basicScancodeIndex++] = action->keystroke.scancode;
-                    break;
-                case KeystrokeType_Media:
-                    if (mediaScancodeIndex >= USB_MEDIA_KEYBOARD_MAX_KEYS) {
+                    case KeystrokeType_Media:
+                        if (mediaScancodeIndex >= USB_MEDIA_KEYBOARD_MAX_KEYS) {
+                            break;
+                        }
+                        ActiveUsbMediaKeyboardReport->scancodes[mediaScancodeIndex++] = action->keystroke.scancode;
                         break;
-                    }
-                    ActiveUsbMediaKeyboardReport->scancodes[mediaScancodeIndex++] = action->keystroke.scancode;
-                    break;
-                case KeystrokeType_System:
-                    if (systemScancodeIndex >= USB_SYSTEM_KEYBOARD_MAX_KEYS) {
+                    case KeystrokeType_System:
+                        if (systemScancodeIndex >= USB_SYSTEM_KEYBOARD_MAX_KEYS) {
+                            break;
+                        }
+                        ActiveUsbSystemKeyboardReport->scancodes[systemScancodeIndex++] = action->keystroke.scancode;
                         break;
-                    }
-                    ActiveUsbSystemKeyboardReport->scancodes[systemScancodeIndex++] = action->keystroke.scancode;
-                    break;
+                }
             }
             break;
         case KeyActionType_Mouse:
